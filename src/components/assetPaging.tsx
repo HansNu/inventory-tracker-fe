@@ -25,7 +25,7 @@ import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useNavigate } from "react-router-dom";
 import { constants } from "../constants"
-import type { Asset, AssetParams, AssetListResponse } from '../models/modelIndex';
+import type { Asset, AssetParams, AssetListResponse, AssetCategory } from '../models/modelIndex';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -33,7 +33,14 @@ const { Option } = Select;
 // ─── API (swap these for your real endpoints) ────────────────────────────────
 
 const ASSET_TYPES = ["Laptop", "Monitor", "Phone", "Vehicle", "Furniture", "Other"];
-const STATUS_OPTIONS: Asset["status"][] = ["active", "inactive", "maintenance"];
+const STATUS_OPTIONS: Asset["status"][] = ["Active", "Inactive", "Maintenance"];
+
+// async function getAssetCategoryList(): Promise<AssetCategory[]>{
+//   const res = await fetch(`${constants.getAssetCategoryList}`)
+//   if(!res.ok) throw new Error("Failed to fetch Asset Category");
+  
+//   return res.json();
+// }
 
 async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
   const query = new URLSearchParams({

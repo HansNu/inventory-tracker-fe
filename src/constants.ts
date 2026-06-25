@@ -10,5 +10,6 @@ export const constants = {
     // ────────────────────────────────── API ──────────────────────────────────────────── //
 
     //get
-    getAssetList : `${apiBaseUrl}getAssetList`
+    getAssetList : `${apiBaseUrl}getAssetList`,
+    getAssetCategoryList: `${apiBaseUrl}getAssetCategoryList`
 }
