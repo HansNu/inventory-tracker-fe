@@ -31,16 +31,14 @@ const { Title } = Typography;
 const { Option } = Select;
 
 // ─── API (swap these for your real endpoints) ────────────────────────────────
-
-const ASSET_TYPES = ["Laptop", "Monitor", "Phone", "Vehicle", "Furniture", "Other"];
 const STATUS_OPTIONS: Asset["status"][] = ["Active", "Inactive", "Maintenance"];
 
-// async function getAssetCategoryList(): Promise<AssetCategory[]>{
-//   const res = await fetch(`${constants.getAssetCategoryList}`)
-//   if(!res.ok) throw new Error("Failed to fetch Asset Category");
+async function getAssetCategoryList(): Promise<AssetCategory[]>{
+  const res = await fetch(`${constants.getAssetCategoryList}`)
+  if(!res.ok) throw new Error("Failed to fetch Asset Category");
   
-//   return res.json();
-// }
+  return res.json();
+}
 
 async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
   const query = new URLSearchParams({
@@ -91,6 +89,7 @@ const AssetListPage: React.FC = () => {
   });
   const [sortField, setSortField] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | "">("descend");
+  const [categoryDdl, setCategoryDdl] = useState<AssetCategory[]>([]);
 
   // ── Debounce search input ──────────────────────────────────────────────────
   useEffect(() => {
@@ -99,7 +98,13 @@ const AssetListPage: React.FC = () => {
       setPagination((p) => ({ ...p, current: 1 }));
     }, 400);
     return () => clearTimeout(t);
+    
   }, [searchInput]);
+
+  useEffect(() => {
+    getAssetCategoryList().then((data) =>setCategoryDdl(data))
+    .catch(()=> message.error("Failet to load categories"));
+  }, [])
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
@@ -306,9 +311,9 @@ const AssetListPage: React.FC = () => {
               }}
               allowClear
             >
-              {ASSET_TYPES.map((t) => (
-                <Option key={t} value={t}>
-                  {t}
+              {categoryDdl.map((t) => (
+                <Option key={t.category_name} value={t.category_name}>
+                  {t.category_name}
                 </Option>
               ))}
             </Select>
