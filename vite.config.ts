@@ -7,10 +7,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-        // removes /api prefix before hitting your Go server
-        // /api/getAssetList → /getAssetList
+        changeOrigin: true
       }
     }
   }

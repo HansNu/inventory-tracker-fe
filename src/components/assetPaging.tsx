@@ -64,9 +64,9 @@ async function deleteAsset(id: number): Promise<void> {
 // ─── Status badge helper ─────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<Asset["status"], string> = {
-  active: "green",
-  inactive: "default",
-  maintenance: "orange",
+  Active: "green",
+  Inactive: "default",
+  Maintenance: "orange",
 };
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ const AssetListPage: React.FC = () => {
     current: 1,
     pageSize: 10,
   });
-  const [sortField, setSortField] = useState("createdAt");
+  const [sortField, setSortField] = useState("purchase_date");
   const [sortOrder, setSortOrder] = useState<"ascend" | "descend" | "">("descend");
   const [categoryDdl, setCategoryDdl] = useState<AssetCategory[]>([]);
 
@@ -141,7 +141,7 @@ const AssetListPage: React.FC = () => {
     setPagination(newPagination);
 
     const s = Array.isArray(sorter) ? sorter[0] : sorter;
-    setSortField(s.field as string ?? "createdAt");
+    setSortField(s.field as string ?? "PurchaseDate");
     setSortOrder((s.order as "ascend" | "descend") ?? "");
   };
 
@@ -163,7 +163,7 @@ const AssetListPage: React.FC = () => {
     setFilterType("");
     setFilterStatus("");
     setPagination({ current: 1, pageSize: 10 });
-    setSortField("createdAt");
+    setSortField("purchase_date");
     setSortOrder("descend");
   };
 
