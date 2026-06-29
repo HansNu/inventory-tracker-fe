@@ -1,15 +1,18 @@
 const baseUrl = 'http://localhost:5173/'
 const apiBaseUrl = 'http://localhost:8080/api'
 
-export const constants = {
+export const navConstants = {
     baseUrl,
 
     //pages
-    addAssetForm: `${baseUrl}/asset/addAssetForm`,
+    addAssetForm: `/asset/addAssetForm`,
+}
 
-    // ────────────────────────────────── API ──────────────────────────────────────────── //
+export const apiConstants = {
+    baseUrl,
 
     //get
     getAssetList : `${apiBaseUrl}/getAssetList`,
-    getAssetCategoryList: `${apiBaseUrl}/getAssetCategoryList`
+    getAssetCategoryList: `${apiBaseUrl}/getAssetCategoryList`,
+    addAsset : `${apiBaseUrl}/addAsset`
 }

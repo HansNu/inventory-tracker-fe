@@ -24,7 +24,7 @@ import {
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useNavigate } from "react-router-dom";
-import { constants } from "../constants"
+import { apiConstants, navConstants } from "../constants"
 import type { Asset, AssetParams, AssetListResponse, AssetCategory } from '../models/modelIndex';
 
 const { Title } = Typography;
@@ -34,7 +34,7 @@ const { Option } = Select;
 const STATUS_OPTIONS: Asset["status"][] = ["Active", "Inactive", "Maintenance"];
 
 async function getAssetCategoryList(): Promise<AssetCategory[]>{
-  const res = await fetch(`${constants.getAssetCategoryList}`)
+  const res = await fetch(`${apiConstants.getAssetCategoryList}`)
   if(!res.ok) throw new Error("Failed to fetch Asset Category");
   
   return res.json();
@@ -51,7 +51,7 @@ async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
     ...(params.sortOrder && { sortOrder: params.sortOrder }),
   });
 
-  const res = await fetch(`${constants.getAssetList}?${query}`);
+  const res = await fetch(`${apiConstants.getAssetList}?${query}`);
   if (!res.ok) throw new Error("Failed to fetch assets");
   return res.json();
 }
@@ -280,7 +280,7 @@ const AssetListPage: React.FC = () => {
           <Button
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => navigate(constants.addAssetForm)}
+            onClick={() => navigate(navConstants.addAssetForm)}
           >
             Add Asset
           </Button>
