@@ -14,5 +14,10 @@ export const apiConstants = {
     //get
     getAssetList : `${apiBaseUrl}/getAssetList`,
     getAssetCategoryList: `${apiBaseUrl}/getAssetCategoryList`,
-    addAsset : `${apiBaseUrl}/addAsset`
+
+    //post
+    addAsset : `${apiBaseUrl}/addAsset`,
+
+    //del
+    deleteAssetByAssetCode: `${apiBaseUrl}/deleteAssetByAssetCode`
 }

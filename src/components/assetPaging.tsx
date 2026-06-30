@@ -26,6 +26,7 @@ import type { FilterValue, SorterResult } from "antd/es/table/interface";
 import { useNavigate } from "react-router-dom";
 import { apiConstants, navConstants } from "../constants"
 import type { Asset, AssetParams, AssetListResponse, AssetCategory } from '../models/modelIndex';
+import axios from 'axios';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -33,32 +34,20 @@ const { Option } = Select;
 // ─── API (swap these for your real endpoints) ────────────────────────────────
 const STATUS_OPTIONS: Asset["status"][] = ["Active", "Inactive", "Maintenance"];
 
-async function getAssetCategoryList(): Promise<AssetCategory[]>{
+async function getAssetCategoryList(): Promise<AssetCategory[]> {
   const res = await fetch(`${apiConstants.getAssetCategoryList}`)
-  if(!res.ok) throw new Error("Failed to fetch Asset Category");
-  
+  if (!res.ok) throw new Error("Failed to fetch Asset Category");
+
   return res.json();
 }
 
 async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
-  const query = new URLSearchParams({
-    page: String(params.page),
-    pageSize: String(params.pageSize),
-    ...(params.search && { search: params.search }),
-    ...(params.type && { type: params.type }),
-    ...(params.status && { status: params.status }),
-    ...(params.sortField && { sortField: params.sortField }),
-    ...(params.sortOrder && { sortOrder: params.sortOrder }),
-  });
-
-  const res = await fetch(`${apiConstants.getAssetList}?${query}`);
-  if (!res.ok) throw new Error("Failed to fetch assets");
-  return res.json();
+  const res = await axios.get<AssetListResponse>(apiConstants.getAssetList, { params });
+  return res.data;
 }
 
-async function deleteAsset(id: number): Promise<void> {
-  const res = await fetch(`/api/assets/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete asset");
+async function deleteAssetByAssetCode(assetCode: string): Promise<void> {
+    await axios.delete(apiConstants.deleteAssetByAssetCode, {data: {asset_code: assetCode}});
 }
 
 // ─── Status badge helper ─────────────────────────────────────────────────────
@@ -98,12 +87,12 @@ const AssetListPage: React.FC = () => {
       setPagination((p) => ({ ...p, current: 1 }));
     }, 400);
     return () => clearTimeout(t);
-    
+
   }, [searchInput]);
 
   useEffect(() => {
-    getAssetCategoryList().then((data) =>setCategoryDdl(data))
-    .catch(()=> message.error("Failet to load categories"));
+    getAssetCategoryList().then((data) => setCategoryDdl(data))
+      .catch(() => message.error("Failet to load categories"));
   }, [])
 
   // ── Fetch ──────────────────────────────────────────────────────────────────
@@ -146,9 +135,9 @@ const AssetListPage: React.FC = () => {
   };
 
   // ── Delete ─────────────────────────────────────────────────────────────────
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (assetCode: string) => {
     try {
-      await deleteAsset(id);
+      await deleteAssetByAssetCode(assetCode);
       message.success("Asset deleted");
       load();
     } catch {
@@ -253,7 +242,7 @@ const AssetListPage: React.FC = () => {
             <Popconfirm
               title="Delete this asset?"
               description="This action cannot be undone."
-              onConfirm={() => handleDelete(record.id)}
+              onConfirm={() => handleDelete(record.asset_code)}
               okText="Delete"
               okButtonProps={{ danger: true }}
               cancelText="Cancel"
