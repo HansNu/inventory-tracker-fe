@@ -8,7 +8,8 @@ function App() {
         <BrowserRouter>
             <Routes>
                 <Route path="/" element={<AssetsPaging />} />
-                <Route path={navConstants.addAssetForm} element={<AddAssetPage/>}/>
+                <Route path={navConstants.addAssetForm} element={<AddAssetPage />} />
+                <Route path={`${navConstants.addAssetForm}/:assetCode/edit`} element={<AddAssetPage />} />
             </Routes>
         </BrowserRouter>
     )

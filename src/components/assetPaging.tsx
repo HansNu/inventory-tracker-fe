@@ -235,7 +235,7 @@ const AssetListPage: React.FC = () => {
             <Button
               type="text"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/assets/${record.id}/edit`)}
+              onClick={() => navigate(`/${navConstants.addAssetForm}/${record.asset_code}/edit`)}
             />
           </Tooltip>
           <Tooltip title="Delete">

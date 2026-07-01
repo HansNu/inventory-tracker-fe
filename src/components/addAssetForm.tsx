@@ -12,9 +12,11 @@ import {
   message,
 } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { apiConstants } from '../constants'
-import type { AssetCategory } from '../models/modelIndex'
+import type { Asset, AssetCategory } from '../models/modelIndex'
+import axios from 'axios';
+import dayjs from 'dayjs'
 
 const { Title } = Typography
 const { Option } = Select
@@ -26,22 +28,26 @@ const STATUS_OPTIONS = [
   { label: 'Maintenance', value: 'Maintenance' },
 ]
 
+
+
+async function getAssetByAssetCode(assetCode: string): Promise<Asset> {
+  const res = await axios.get(`${apiConstants.getAssetByAssetCode}/${assetCode}`)
+  return res.data;
+}
+
 async function getAssetCategoryList(): Promise<AssetCategory[]> {
   const res = await fetch(`${apiConstants.getAssetCategoryList}`)
   if (!res.ok) throw new Error('Failed to fetch Asset Category')
-  return res.json()
+    return res.json()
 }
 
 async function addAsset(payload: Record<string, unknown>): Promise<void> {
-  const res = await fetch(apiConstants.addAsset, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  if (!res.ok) {
-    const err = await res.json()
-    throw new Error(err.error ?? 'Failed to add asset')
-  }
+  await axios.post(apiConstants.addAsset, payload)
+}
+
+async function updateAsset(payload: Record<string, unknown>): Promise<void> {
+  await axios.put(apiConstants.updateAsset, payload)
+  
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -51,25 +57,47 @@ const AddAssetPage: React.FC = () => {
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [categoryDdl, setCategoryDdl] = useState<AssetCategory[]>([])
-
+  const [assetData, setAssetData] = useState<Asset>()
+  const { assetCode } = useParams()
+  const isEditMode = !!assetCode
+  
   useEffect(() => {
     getAssetCategoryList()
-      .then((data) => setCategoryDdl(data))
-      .catch(() => message.error('Failed to load categories'))
-  }, [])
-
+    .then((data) => setCategoryDdl(data))
+    .catch(() => message.error('Failed to load categories'))
+    }, [])
+    
+    useEffect(() => {
+      if (!assetCode) return  // add mode, do nothing
+      
+      getAssetByAssetCode(assetCode)
+      .then((data) => {
+        setAssetData(data)
+        form.setFieldsValue({
+          ...data,
+          purchase_date: data.purchase_date ? dayjs(data.purchase_date) : null
+          // DatePicker needs a dayjs object, not a plain string
+        })
+      })
+      .catch(() => message.error('Failed to load asset'))
+    }, [assetCode])
+  
   const handleSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true)
     try {
       // Format date to string before sending
       const payload = {
         ...values,
+        id: assetData?.id,
         purchase_date: values.purchase_date
-          ? (values.purchase_date as { format: (f: string) => string }).format('YYYY-MM-DD')
-          : null,
+        ? (values.purchase_date as { format: (f: string) => string }).format('YYYY-MM-DD')
+        : null,
       }
-      await addAsset(payload)
-      message.success('Asset added successfully')
+      if (isEditMode) {
+        await updateAsset(payload)
+      } else {
+        await addAsset(payload)
+      } message.success('Asset added successfully')
       navigate(-1)
     } catch (err: unknown) {
       message.error(err instanceof Error ? err.message : 'Failed to add asset')
@@ -90,9 +118,7 @@ const AddAssetPage: React.FC = () => {
           />
         </Col>
         <Col>
-          <Title level={4} style={{ margin: 0 }}>
-            Add Asset
-          </Title>
+          <Title level={4}>{isEditMode ? 'Edit Asset' : 'Add Asset'}</Title>
         </Col>
       </Row>
 
@@ -214,7 +240,7 @@ const AddAssetPage: React.FC = () => {
             </Col>
             <Col>
               <Button type="primary" htmlType="submit" loading={submitting}>
-                Save Asset
+                {isEditMode ? 'Update Asset' : 'Save Asset'}
               </Button>
             </Col>
           </Row>
