@@ -28,8 +28,6 @@ const STATUS_OPTIONS = [
   { label: 'Maintenance', value: 'Maintenance' },
 ]
 
-
-
 async function getAssetByAssetCode(assetCode: string): Promise<Asset> {
   const res = await axios.get(`${apiConstants.getAssetByAssetCode}/${assetCode}`)
   return res.data;
@@ -161,8 +159,8 @@ const AddAssetPage: React.FC = () => {
               >
                 <Select placeholder="Select category" allowClear>
                   {categoryDdl.map((c) => (
-                    <Option key={c.id} value={c.category_name}>
-                      {c.category_name}
+                    <Option key={c.id} value={c.categoryName}>
+                      {c.categoryName}
                     </Option>
                   ))}
                 </Select>

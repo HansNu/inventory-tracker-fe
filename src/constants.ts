@@ -6,6 +6,7 @@ export const navConstants = {
 
     //pages
     addAssetForm: `/asset/addAssetForm`,
+    addCategoryForm: `/asset/addCategoryForm`
 }
 
 export const apiConstants = {

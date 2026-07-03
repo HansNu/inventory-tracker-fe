@@ -301,8 +301,8 @@ const AssetListPage: React.FC = () => {
               allowClear
             >
               {categoryDdl.map((t) => (
-                <Option key={t.category_name} value={t.category_name}>
-                  {t.category_name}
+                <Option key={t.categoryName} value={t.categoryName}>
+                  {t.categoryName}
                 </Option>
               ))}
             </Select>
