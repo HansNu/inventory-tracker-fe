@@ -19,9 +19,11 @@ export const apiConstants = {
 
     //post
     addAsset : `${apiBaseUrl}/addAsset`,
+    addAssetCategory : `${apiBaseUrl}/addAssetCategory`,
 
     //del
     deleteAssetByAssetCode: `${apiBaseUrl}/deleteAssetByAssetCode`,
+    deleteAssetCategoryById: `${apiBaseUrl}/deleteAssetCategoryById`,
 
     //put
     updateAsset: `${apiBaseUrl}/updateAsset`

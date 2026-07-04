@@ -21,6 +21,7 @@ import type { ColumnsType } from "antd/es/table";
 
 import { apiConstants } from "../constants";
 import type { CategoryRow } from "../models/modelIndex";
+import axios from "axios";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -94,7 +95,7 @@ const CategoryListPage: React.FC = () => {
             return;
         }
 
-        // TODO call your API here
+        await axios.post(apiConstants.addAsset, row)
 
         message.success("Category added.");
 
@@ -114,24 +115,18 @@ const CategoryListPage: React.FC = () => {
     };
 
     const deleteCategory = (id: number) => {
-        // TODO delete API
-
+        axios.delete(apiConstants.deleteAssetCategoryById, { data: { id: id } });
         setCategories((prev) => prev.filter((x) => x.id !== id));
 
         message.success("Deleted");
     };
 
     const filtered = categories.filter((x) => {
-        const matchesSearch =
-            x.categoryName
-                .toLowerCase()
-                .includes(searchInput.toLowerCase()) ||
-            x.categoryGroup
-                .toLowerCase()
-                .includes(searchInput.toLowerCase());
+        const matchesSearch = 
+        x.categoryName.toLowerCase().includes(searchInput.toLowerCase()) ||
+        x.categoryGroup.toLowerCase().includes(searchInput.toLowerCase());
 
-        const matchesGroup =
-            !filterGroup || x.categoryGroup === filterGroup;
+        const matchesGroup = !filterGroup || x.categoryGroup === filterGroup;
 
         return matchesSearch && matchesGroup;
     });
