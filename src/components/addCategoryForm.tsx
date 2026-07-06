@@ -95,7 +95,7 @@ const CategoryListPage: React.FC = () => {
             return;
         }
 
-        await axios.post(apiConstants.addAsset, row)
+        await axios.post(apiConstants.addAssetCategory, row)
 
         message.success("Category added.");
 
@@ -126,7 +126,7 @@ const CategoryListPage: React.FC = () => {
         x.categoryName.toLowerCase().includes(searchInput.toLowerCase()) ||
         x.categoryGroup.toLowerCase().includes(searchInput.toLowerCase());
 
-        const matchesGroup = !filterGroup || x.categoryGroup === filterGroup;
+        const matchesGroup = !filterGroup || x.categoryGroup === filterGroup || x.isNew;
 
         return matchesSearch && matchesGroup;
     });
@@ -157,11 +157,11 @@ const CategoryListPage: React.FC = () => {
             render: (_, record) =>
                 record.isNew ? (
                     <Input
-                        value={record.categoryName}
+                        value={record.categoryGroup}
                         onChange={(e) =>
                             updateRow(
                                 record.id,
-                                "categoryName",
+                                "categoryGroup",
                                 e.target.value
                             )
                         }
