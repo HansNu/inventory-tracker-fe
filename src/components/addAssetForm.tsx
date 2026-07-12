@@ -15,7 +15,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useNavigate, useParams } from 'react-router-dom'
 import { apiConstants } from '../constants'
 import type { Asset, AssetCategory } from '../models/modelIndex'
-import axios from 'axios';
+import axios from 'axios'
 import dayjs from 'dayjs'
 
 const { Title } = Typography
@@ -45,7 +45,6 @@ async function addAsset(payload: Record<string, unknown>): Promise<void> {
 
 async function updateAsset(payload: Record<string, unknown>): Promise<void> {
   await axios.put(apiConstants.updateAsset, payload)
-  
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -73,7 +72,7 @@ const AddAssetPage: React.FC = () => {
         setAssetData(data)
         form.setFieldsValue({
           ...data,
-          purchase_date: data.purchase_date ? dayjs(data.purchase_date) : null
+          purchaseDate: data.purchaseDate ? dayjs(data.purchaseDate) : null
           // DatePicker needs a dayjs object, not a plain string
         })
       })
@@ -87,8 +86,8 @@ const AddAssetPage: React.FC = () => {
       const payload = {
         ...values,
         id: assetData?.id,
-        purchase_date: values.purchase_date
-        ? (values.purchase_date as { format: (f: string) => string }).format('YYYY-MM-DD')
+        purchaseDate: values.purchaseDate
+        ? (values.purchaseDate as { format: (f: string) => string }).format('YYYY-MM-DD')
         : null,
       }
       if (isEditMode) {
@@ -132,7 +131,7 @@ const AddAssetPage: React.FC = () => {
             <Col xs={24} sm={12} md={8}>
               <Form.Item
                 label="Asset Code"
-                name="asset_code"
+                name="assetCode"
                 rules={[{ required: true, message: 'Asset code is required' }]}
               >
                 <Input placeholder="e.g. AST-0001" />
@@ -143,7 +142,7 @@ const AddAssetPage: React.FC = () => {
             <Col xs={24} sm={12} md={8}>
               <Form.Item
                 label="Asset Name"
-                name="asset_name"
+                name="assetName"
                 rules={[{ required: true, message: 'Asset name is required' }]}
               >
                 <Input placeholder="e.g. MacBook Pro 14" />
@@ -154,12 +153,12 @@ const AddAssetPage: React.FC = () => {
             <Col xs={24} sm={12} md={8}>
               <Form.Item
                 label="Asset Category"
-                name="asset_category"
+                name="categoryId"
                 rules={[{ required: true, message: 'Category is required' }]}
               >
                 <Select placeholder="Select category" allowClear>
                   {categoryDdl.map((c) => (
-                    <Option key={c.id} value={c.categoryName}>
+                    <Option key={c.categoryName} value={c.id}>
                       {c.categoryName}
                     </Option>
                   ))}
@@ -176,7 +175,7 @@ const AddAssetPage: React.FC = () => {
 
             {/* Serial Number */}
             <Col xs={24} sm={12} md={8}>
-              <Form.Item label="Serial Number" name="serial_number">
+              <Form.Item label="Serial Number" name="serialNumber">
                 <Input placeholder="e.g. C02XL0LFJGH5" />
               </Form.Item>
             </Col>
@@ -218,7 +217,7 @@ const AddAssetPage: React.FC = () => {
 
             {/* Purchase Date */}
             <Col xs={24} sm={12} md={8}>
-              <Form.Item label="Purchase Date" name="purchase_date">
+              <Form.Item label="Purchase Date" name="purchaseDate">
                 <DatePicker style={{ width: '100%' }} />
               </Form.Item>
             </Col>

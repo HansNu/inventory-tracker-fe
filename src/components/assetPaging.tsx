@@ -47,7 +47,7 @@ async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
 }
 
 async function deleteAssetByAssetCode(assetCode: string): Promise<void> {
-    await axios.delete(apiConstants.deleteAssetByAssetCode, {data: {asset_code: assetCode}});
+    await axios.delete(apiConstants.deleteAssetByAssetCode, {data: {assetCode: assetCode}});
 }
 
 // ─── Status badge helper ─────────────────────────────────────────────────────
@@ -160,21 +160,21 @@ const AssetListPage: React.FC = () => {
   const columns: ColumnsType<Asset> = [
     {
       title: "Asset Code",
-      dataIndex: "asset_code",
+      dataIndex: "assetCode",
       key: "assetCode",
       sorter: true,
       ellipsis: true,
     },
     {
       title: "Name",
-      dataIndex: "asset_name",
+      dataIndex: "assetName",
       key: "assetName",
       sorter: true,
       ellipsis: true,
     },
     {
       title: "Asset Category",
-      dataIndex: "asset_category",
+      dataIndex: "categoryName",
       key: "assetCategory",
       sorter: true,
       ellipsis: true,
@@ -188,7 +188,7 @@ const AssetListPage: React.FC = () => {
     },
     {
       title: "Serial Number",
-      dataIndex: "serial_number",
+      dataIndex: "serialNumber",
       key: "serialNumber",
       sorter: true,
       width: 130,
@@ -217,7 +217,7 @@ const AssetListPage: React.FC = () => {
     },
     {
       title: "Purchase Date",
-      dataIndex: "purchase_date",
+      dataIndex: "purchaseDate",
       key: "purchaseDate",
       sorter: true,
       width: 130,
@@ -235,14 +235,14 @@ const AssetListPage: React.FC = () => {
             <Button
               type="text"
               icon={<EditOutlined />}
-              onClick={() => navigate(`/${navConstants.addAssetForm}/${record.asset_code}/edit`)}
+              onClick={() => navigate(`/${navConstants.addAssetForm}/${record.assetCode}/edit`)}
             />
           </Tooltip>
           <Tooltip title="Delete">
             <Popconfirm
               title="Delete this asset?"
               description="This action cannot be undone."
-              onConfirm={() => handleDelete(record.asset_code)}
+              onConfirm={() => handleDelete(record.assetCode)}
               okText="Delete"
               okButtonProps={{ danger: true }}
               cancelText="Cancel"
