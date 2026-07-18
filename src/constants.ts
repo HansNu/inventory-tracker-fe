@@ -6,7 +6,8 @@ export const navConstants = {
 
     //pages
     addAssetForm: `/asset/addAssetForm`,
-    addCategoryForm: `/asset/addCategoryForm`
+    addCategoryForm: `/asset/addCategoryForm`,
+    addCatGroupForm: `/asset/addCatGroupForm`
 }
 
 export const apiConstants = {
@@ -20,6 +21,7 @@ export const apiConstants = {
     //post
     addAsset : `${apiBaseUrl}/addAsset`,
     addAssetCategory : `${apiBaseUrl}/addAssetCategory`,
+    addCategoryGroup: `${apiBaseUrl}/addCategoryGroup`,
 
     //del
     deleteAssetByAssetCode: `${apiBaseUrl}/deleteAssetByAssetCode`,
