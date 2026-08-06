@@ -34,9 +34,8 @@ async function getAssetByAssetCode(assetCode: string): Promise<Asset> {
 }
 
 async function getAssetCategoryList(): Promise<AssetCategory[]> {
-  const res = await fetch(`${apiConstants.getAssetCategoryList}`)
-  if (!res.ok) throw new Error('Failed to fetch Asset Category')
-    return res.json()
+  const res = await axios.get<AssetCategory[]>(apiConstants.getAssetCategoryList)
+  return res.data
 }
 
 async function addAsset(payload: Record<string, unknown>): Promise<void> {
@@ -57,17 +56,17 @@ const AddAssetPage: React.FC = () => {
   const [assetData, setAssetData] = useState<Asset>()
   const { assetCode } = useParams()
   const isEditMode = !!assetCode
-  
+
   useEffect(() => {
     getAssetCategoryList()
-    .then((data) => setCategoryDdl(data))
-    .catch(() => message.error('Failed to load categories'))
-    }, [])
-    
-    useEffect(() => {
-      if (!assetCode) return  // add mode, do nothing
-      
-      getAssetByAssetCode(assetCode)
+      .then((data) => setCategoryDdl(data))
+      .catch(() => message.error('Failed to load categories'))
+  }, [])
+
+  useEffect(() => {
+    if (!assetCode) return  // add mode, do nothing
+
+    getAssetByAssetCode(assetCode)
       .then((data) => {
         setAssetData(data)
         form.setFieldsValue({
@@ -77,8 +76,8 @@ const AddAssetPage: React.FC = () => {
         })
       })
       .catch(() => message.error('Failed to load asset'))
-    }, [assetCode])
-  
+  }, [assetCode])
+
   const handleSubmit = async (values: Record<string, unknown>) => {
     setSubmitting(true)
     try {
@@ -87,8 +86,8 @@ const AddAssetPage: React.FC = () => {
         ...values,
         id: assetData?.id,
         purchaseDate: values.purchaseDate
-        ? (values.purchaseDate as { format: (f: string) => string }).format('YYYY-MM-DD')
-        : null,
+          ? (values.purchaseDate as { format: (f: string) => string }).format('YYYY-MM-DD')
+          : null,
       }
       if (isEditMode) {
         await updateAsset(payload)

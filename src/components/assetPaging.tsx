@@ -1,25 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import {
-  Table,
-  Input,
-  Select,
-  Button,
-  Space,
-  Tag,
-  Typography,
-  Row,
-  Col,
-  Card,
-  Tooltip,
-  Popconfirm,
-  message,
+  Table, Input, Select, Button, Space, Tag, Typography, Row, Col, Card, Tooltip, Popconfirm, message,
 } from "antd";
 import {
-  PlusOutlined,
-  SearchOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  ReloadOutlined,
+  PlusOutlined, SearchOutlined, EditOutlined, DeleteOutlined, ReloadOutlined, UserOutlined, LogoutOutlined, AppstoreAddOutlined
 } from "@ant-design/icons";
 import type { ColumnsType, TablePaginationConfig } from "antd/es/table";
 import type { FilterValue, SorterResult } from "antd/es/table/interface";
@@ -27,18 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { apiConstants, navConstants } from "../constants"
 import type { Asset, AssetParams, AssetListResponse, AssetCategory } from '../models/modelIndex';
 import axios from 'axios';
+import { useAuth } from '../context/authContext';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 const { Option } = Select;
 
-// ─── API (swap these for your real endpoints) ────────────────────────────────
 const STATUS_OPTIONS: Asset["status"][] = ["Active", "Inactive", "Maintenance"];
 
 async function getAssetCategoryList(): Promise<AssetCategory[]> {
-  const res = await fetch(`${apiConstants.getAssetCategoryList}`)
-  if (!res.ok) throw new Error("Failed to fetch Asset Category");
-
-  return res.json();
+  // was a raw fetch() — switched to axios so the auth interceptor attaches the token
+  const res = await axios.get<AssetCategory[]>(apiConstants.getAssetCategoryList);
+  return res.data;
 }
 
 async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
@@ -47,10 +30,8 @@ async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
 }
 
 async function deleteAssetByAssetCode(assetCode: string): Promise<void> {
-    await axios.delete(apiConstants.deleteAssetByAssetCode, {data: {assetCode: assetCode}});
+  await axios.delete(apiConstants.deleteAssetByAssetCode, { data: { assetCode: assetCode } });
 }
-
-// ─── Status badge helper ─────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<Asset["status"], string> = {
   Active: "green",
@@ -58,10 +39,9 @@ const STATUS_COLORS: Record<Asset["status"], string> = {
   Maintenance: "orange",
 };
 
-// ─── Component ───────────────────────────────────────────────────────────────
-
 const AssetListPage: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const [assets, setAssets] = useState<Asset[]>([]);
   const [total, setTotal] = useState(0);
@@ -266,13 +246,30 @@ const AssetListPage: React.FC = () => {
           </Title>
         </Col>
         <Col>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            onClick={() => navigate(navConstants.addAssetForm)}
-          >
-            Add Asset
-          </Button>
+          <Space>
+            <Text type="secondary">
+              <UserOutlined /> {user?.name}
+            </Text>
+            {/* categoryGroup doubles as role here — same pattern as Users.IsAdmin() in Go */}
+            {user?.categoryGroup === "IT" && (
+              <Button
+                icon={<AppstoreAddOutlined />}
+                onClick={() => navigate(navConstants.addCategoryForm)}
+              >
+                Manage Categories
+              </Button>
+            )}
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => navigate(navConstants.addAssetForm)}
+            >
+              Add Asset
+            </Button>
+            <Button icon={<LogoutOutlined />} onClick={logout}>
+              Logout
+            </Button>
+          </Space>
         </Col>
       </Row>
 

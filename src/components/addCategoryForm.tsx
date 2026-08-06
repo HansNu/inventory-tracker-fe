@@ -11,6 +11,7 @@ import {
     Space,
     Popconfirm,
     message,
+    Divider,
 } from "antd";
 import {
     SearchOutlined,
@@ -19,32 +20,28 @@ import {
 } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 
-import { apiConstants } from "../constants";
+import { apiConstants, navConstants } from "../constants";
 import type { CategoryRow } from "../models/modelIndex";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const { Title } = Typography;
 const { Option } = Select;
 
 async function getAssetCategoryList(): Promise<CategoryRow[]> {
-    const res = await fetch(apiConstants.getAssetCategoryList);
-
-    if (!res.ok) throw new Error();
-
-    const data = await res.json();
-
-    return data.map((x: any) => ({
+    const res = await axios.get<any[]>(apiConstants.getAssetCategoryList);
+    return res.data.map((x: any) => ({
         ...x,
         key: crypto.randomUUID(),
     }));
 }
-
 const CategoryListPage: React.FC = () => {
     const [categories, setCategories] = useState<CategoryRow[]>([]);
     const [loading, setLoading] = useState(false);
 
     const [searchInput, setSearchInput] = useState("");
     const [filterGroup, setFilterGroup] = useState("");
+    const navigate = useNavigate();
 
     useEffect(() => {
         load();
@@ -122,9 +119,9 @@ const CategoryListPage: React.FC = () => {
     };
 
     const filtered = categories.filter((x) => {
-        const matchesSearch = 
-        x.categoryName.toLowerCase().includes(searchInput.toLowerCase()) ||
-        x.categoryGroup.toLowerCase().includes(searchInput.toLowerCase());
+        const matchesSearch =
+            x.categoryName.toLowerCase().includes(searchInput.toLowerCase()) ||
+            x.categoryGroup.toLowerCase().includes(searchInput.toLowerCase());
 
         const matchesGroup = !filterGroup || x.categoryGroup === filterGroup || x.isNew;
 
@@ -233,6 +230,26 @@ const CategoryListPage: React.FC = () => {
                             placeholder="Category Group"
                             value={filterGroup || undefined}
                             onChange={(v) => setFilterGroup(v ?? "")}
+                            // dropdownRender lets you inject arbitrary content below the
+                            // option list — same idea as a "footer slot" in a component library
+                            dropdownRender={(menu) => (
+                                <>
+                                    {menu}
+                                    <Divider style={{ margin: "8px 0" }} />
+                                    <Button
+                                        type="text"
+                                        block
+                                        icon={<PlusOutlined />}
+                                        // onMouseDown instead of onClick: Select closes the dropdown
+                                        // on blur before a click event fires, so onClick would get
+                                        // swallowed. onMouseDown fires first, before blur.
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        onClick={() => navigate(navConstants.addCatGroupForm)}
+                                    >
+                                        Add Category Group
+                                    </Button>
+                                </>
+                            )}
                         >
                             {[
                                 ...new Set(
