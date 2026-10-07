@@ -112,7 +112,7 @@ const CategoryListPage: React.FC = () => {
     };
 
     const deleteCategory = (id: number) => {
-        axios.delete(apiConstants.deleteAssetCategoryById, { data: { id: id } });
+        axios.delete(`${apiConstants.deleteAssetCategoryById}/${id}`);
         setCategories((prev) => prev.filter((x) => x.id !== id));
 
         message.success("Deleted");

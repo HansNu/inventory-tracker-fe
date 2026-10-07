@@ -42,8 +42,8 @@ async function addAsset(payload: Record<string, unknown>): Promise<void> {
   await axios.post(apiConstants.addAsset, payload)
 }
 
-async function updateAsset(payload: Record<string, unknown>): Promise<void> {
-  await axios.put(apiConstants.updateAsset, payload)
+async function updateAsset(id: number, payload: Record<string, unknown>): Promise<void> {
+  await axios.put(`${apiConstants.updateAsset}/${id}`, payload)
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -90,10 +90,12 @@ const AddAssetPage: React.FC = () => {
           : null,
       }
       if (isEditMode) {
-        await updateAsset(payload)
+        if (!assetData?.id) throw new Error('Asset id is missing')
+        await updateAsset(assetData.id, payload)
       } else {
         await addAsset(payload)
-      } message.success('Asset added successfully')
+      }
+      message.success(isEditMode ? 'Asset updated' : 'Asset added')
       navigate(-1)
     } catch (err: unknown) {
       message.error(err instanceof Error ? err.message : 'Failed to add asset')

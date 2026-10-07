@@ -30,7 +30,7 @@ async function getAssetList(params: AssetParams): Promise<AssetListResponse> {
 }
 
 async function deleteAssetByAssetCode(assetCode: string): Promise<void> {
-  await axios.delete(apiConstants.deleteAssetByAssetCode, { data: { assetCode: assetCode } });
+  await axios.delete(`${apiConstants.deleteAssetByAssetCode}/${encodeURIComponent(assetCode)}`);
 }
 
 const STATUS_COLORS: Record<Asset["status"], string> = {
