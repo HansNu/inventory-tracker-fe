@@ -1,73 +1,58 @@
-# React + TypeScript + Vite
+# Inventory Tracker — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript admin UI for the [Inventory Tracker
+API](https://github.com/HansNu/inventory-tracker) — browse, search, create,
+edit and delete IT assets, categories and category groups, behind JWT login.
 
-Currently, two official plugins are available:
+**API:** [Swagger](https://inventory-tracker-production-a38f.up.railway.app/swagger/index.html)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+React 19 · TypeScript · Vite · Ant Design · React Router · axios
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Running locally
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev          # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+By default it talks to a backend on `http://localhost:8080/api`. To point it
+at the deployed API instead, create `.env` in the project root:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_API_BASE_URL=https://your-api-host/api
+```
+
+Two things about that variable: the `VITE_` prefix is required or Vite strips
+it out of the client bundle, and the value must include the scheme — without
+`https://` the browser treats it as a relative path and resolves it against the
+dev server.
+
+Restart the dev server after changing it; `.env` is read once at startup.
+
+If you point the frontend at a deployed API, that API's `FRONTEND_ORIGIN` has
+to name this origin exactly, or the browser blocks every request on CORS.
+
+## Structure
+
+```
+src/
+  api/          axios calls, one module per resource
+  context/      AuthContext — token + current user, persisted to localStorage
+  components/   pages and forms
+  models/       TypeScript shapes mirroring the API's JSON
+  constants.ts  route paths and endpoint URLs
+```
+
+`api/axiosSetup.ts` installs two interceptors, imported once from `main.tsx`:
+one attaches `Authorization: Bearer <token>` to every outgoing request, the
+other catches `401`, clears the stored token and redirects to `/login`. Session
+expiry is handled in one place rather than at every call site.
+
+`protectedRoute.tsx` wraps the authenticated routes. It is a **convenience, not
+a security control** — it hides UI, nothing more. Every real check lives in the
+API's `AuthMiddleware` and `RoleMiddleware`; the admin-only delete is rejected
+server-side whether or not the button renders.
+
+
